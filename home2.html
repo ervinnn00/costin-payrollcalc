@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payroll Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        td, th {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        input, select {
+            width: 200px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .compute-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .compute-btn:hover {
+            background-color: #45a049;
+        }
+        input[readonly] {
+            background-color: #f8f8f8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form name="payrollForm">
+            <table>
+                <tr><th colspan="2">Employee Information</th></tr>
+                <tr>
+                    <td>Employee Number</td>
+                    <td><input type="number" name="empNumber" required></td>
+                </tr>
+                <tr>
+                    <td>Last Name</td>
+                    <td><input type="text" name="lastName" required></td>
+                </tr>
+                <tr>
+                    <td>First Name</td>
+                    <td><input type="text" name="firstName" required></td>
+                </tr>
+                <tr>
+                    <td>Position</td>
+                    <td>
+                        <select name="position">
+                            <option value="Employee">Employee</option>
+                            <option value="Supervisor">Supervisor</option>
+                            <option value="Manager">Manager</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Hours Worked</td>
+                    <td><input type="number" name="hoursWorked" step="0.5" required></td>
+                </tr>
+            </table>
+
+            <input type="button" class="compute-btn" value="Calculate Payroll" onclick="calculatePayroll()">
+
+            <table>
+                <tr><th colspan="2">Payroll Results</th></tr>
+                <tr>
+                    <td>Rate</td>
+                    <td><input type="number" name="rate" readonly></td>
+                </tr>
+                <tr>
+                    <td>Gross Pay</td>
+                    <td><input type="number" name="gross" readonly></td>
+                </tr>
+                <tr>
+                    <td>Bonus</td>
+                    <td><input type="number" name="bonus" readonly></td>
+                </tr>
+                <tr>
+                    <td>SSS (3%)</td>
+                    <td><input type="number" name="sss" readonly></td>
+                </tr>
+                <tr>
+                    <td>Tax</td>
+                    <td><input type="number" name="tax" readonly></td>
+                </tr>
+                <tr>
+                    <td>Pag-IBIG (10%)</td>
+                    <td><input type="number" name="pagbig" readonly></td>
+                </tr>
+                <tr>
+                    <td>Total Deductions</td>
+                    <td><input type="number" name="totalDeductions" readonly></td>
+                </tr>
+                <tr>
+                    <td>Net Pay</td>
+                    <td><input type="number" name="netPay" readonly></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <script>
+        function calculatePayroll() {
+            const form = document.forms['payrollForm'];
+            
+            // Position-based rate calculation
+            let rate;
+            switch(form.position.value) {
+                case 'Manager': rate = 500; break;
+                case 'Supervisor': rate = 400; break;
+                default: rate = 300;
+            }
+            
+            // Gross calculation
+            const hours = parseFloat(form.hoursWorked.value);
+            const gross = rate * hours;
+            
+            // Bonus calculation
+            let bonusPercentage = 0;
+            if (gross >= 15000) bonusPercentage = 0.3;
+            else if (gross >= 10000) bonusPercentage = 0.25;
+            else if (gross >= 5000) bonusPercentage = 0.2;
+            else if (gross >= 3000) bonusPercentage = 0.15;
+            const bonus = gross * bonusPercentage;
+            
+            // Deductions
+            const sss = gross * 0.03;
+            const pagbig = gross * 0.1;
+            
+            // Tax calculation
+            let taxPercentage = 0;
+            if (gross >= 15000) taxPercentage = 0.32;
+            else if (gross >= 8000) taxPercentage = 0.25;
+            else if (gross >= 4000) taxPercentage = 0.23;
+            else if (gross >= 2000) taxPercentage = 0.18;
+            const tax = gross * taxPercentage;
+            
+            // Final calculations
+            const totalDeductions = sss + tax + pagbig;
+            const netPay = gross + bonus - totalDeductions;
+            
+            // Update form fields
+            form.rate.value = rate.toFixed(2);
+            form.gross.value = gross.toFixed(2);
+            form.bonus.value = bonus.toFixed(2);
+            form.sss.value = sss.toFixed(2);
+            form.tax.value = tax.toFixed(2);
+            form.pagbig.value = pagbig.toFixed(2);
+            form.totalDeductions.value = totalDeductions.toFixed(2);
+            form.netPay.value = netPay.toFixed(2);
+        }
+    </script>
+</body>
+</html>
